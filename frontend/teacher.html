@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Teacher Dashboard</h2>
+
+<h3 id="status">Waiting...</h3>
+<ul id="timeline"></ul>
+
+<script>
+const ws = new WebSocket("ws://localhost:8000/ws/teacher");
+const status = document.getElementById("status");
+const timeline = document.getElementById("timeline");
+
+ws.onmessage = (e) => {
+  const data = JSON.parse(e.data);
+
+  if (data.proctor_alert) {
+    status.innerHTML = " Proctor Alert";
+  } else {
+    status.innerHTML = data.emotion === "Confused"
+      ? " Student is Confused......."
+      : data.emotion === "Happy"
+      ? " Student is Happy..........."
+      : " Student is Focused.......";
+  }
+
+  const li = document.createElement("li");
+  li.innerText = `${new Date().toLocaleTimeString()} - ${data.emotion}`;
+  timeline.appendChild(li);
+};
+</script>
+</body>
+</html>
